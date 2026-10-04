@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AirSense - Office Maintenance Alerts and Persistent Condition Records">
+  <title>AirSense | Office Maintenance Alerts</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="apm-layout">
+<aside class="apm-sidebar">
+<a href="index.html" class="sidebar-brand"><span class="brand-logo-cube">AS</span><span class="brand-text"><span class="brand-name">AirSense</span><span class="brand-badge">IoT Telemetry</span></span></a>
+      <div class="sidebar-nav-label">Office Menu — All Units</div>
+      <nav class="apm-side-nav">
+        <a href="index.html" data-nav="dashboard" class="side-nav-link"><span>Dashboard Overview</span></a>
+        <a href="analytics.html" data-nav="analytics" class="side-nav-link"><span>Historical Trends</span></a>
+        <a href="maintenance.html" data-nav="maintenance" class="side-nav-link"><span>Maintenance Logs</span></a>
+        <a href="alerts.html" data-nav="alerts" class="side-nav-link"><span>Alert Records</span></a>
+      </nav>
+      <div id="sidebarRoomCtx" class="sidebar-room-context hidden">
+        <div class="sidebar-ctx-top">
+          <span class="sidebar-context-label">Now Viewing</span>
+          <a id="sidebarClearRoom" href="index.html" class="sidebar-clear-room">✕ All units</a>
+        </div>
+        <span id="sidebarRoomName" class="sidebar-context-room">Room</span>
+        <span id="sidebarRoomSub" class="sidebar-context-sub">AC Unit</span>
+      </div>
+      <nav id="sidebarRoomNav" class="sidebar-room-subnav hidden">
+        <div id="roomNavLabel" class="sidebar-room-subnav-label">Room Pages</div>
+        <a id="sideLinkRoom" href="room.html" class="side-nav-link sub-link"><span>Room Dashboard</span></a>
+        <a id="sideLinkAnalytics" href="analytics.html" class="side-nav-link sub-link"><span>This Room's Trends</span></a>
+        <a id="sideLinkMaint" href="maintenance.html" class="side-nav-link sub-link"><span>This Room's Logs</span></a>
+        <a id="sideLinkAlerts" href="alerts.html" class="side-nav-link sub-link"><span>This Room's Alerts</span></a>
+      </nav>
+      <div class="sidebar-room-links">
+        <div class="sidebar-nav-label">Switch Room / AC Unit</div>
+        <a href="room.html?sensor_id=sensor1" data-room="sensor1" class="side-nav-link">Room 1 - AC Unit 1</a>
+        <a href="room.html?sensor_id=sensor2" data-room="sensor2" class="side-nav-link">Room 2 - AC Unit 2</a>
+        <a href="room.html?sensor_id=sensor3" data-room="sensor3" class="side-nav-link">Room 3 - AC Unit 3</a>
+        <a href="room.html?sensor_id=sensor4" data-room="sensor4" class="side-nav-link">Room 4 - AC Unit 4</a>
+      </div>
+<div class="sidebar-footer"><div class="sidebar-live-pill">SYSTEM LIVE</div><div>AirSense Monitor</div></div>
+</aside>
+<div class="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
+<div class="apm-body">
+<header class="apm-navbar">
+<div class="navbar-left">
+<button class="sidebar-toggle-btn" onclick="toggleSidebar()">MENU</button>
+<span class="topbar-page-label">Alert Records</span>
+</div>
+<div class="navbar-right">
+<div class="live-status-pill">
+<span id="headerStatusDot" class="status-indicator-dot dot-online"></span>
+<span id="headerStatusText" class="status-indicator-text">LIVE</span>
+</div>
+</div>
+</header>
+
+
+    <!-- Main Content Container -->
+    <div class="apm-main-container">
+
+      <main class="alerts-page">
+
+        <!-- Selected-unit context banner (shown only when ?sensor_id= is present) -->
+        <section id="alertsUnitBanner" class="page-header-banner hidden" style="margin-bottom: 16px;">
+          <div class="banner-title-group">
+            <div class="unit-tag">SELECTED UNIT · FILTERED VIEW</div>
+            <h1 id="alertsUnitTitle" class="page-title">Room Alert Records</h1>
+            <p id="alertsUnitDesc" class="page-desc">Showing alert records filtered to the selected AC unit.</p>
+          </div>
+        </section>
+
+        <!-- Header Banner -->
+        <section class="page-header-banner">
+          <div class="banner-title-group">
+            <div class="unit-tag">OFFICE ALERTS · DECISION SUPPORT SYSTEM</div>
+            <h1 class="page-title">Air Conditioning Maintenance Alerts</h1>
+            <p class="page-desc">
+              Maintenance recommendations generated when a monitored room records <strong>persistent high dust conditions</strong> (24 hours at ≥ 80% reference range), avoiding unnecessary cleaning caused by temporary particulate spikes.
+            </p>
+          </div>
+        </section>
+
+        <!-- Active Alerts Feed Section -->
+        <section class="alerts-feed-section">
+          <div class="card-bar-header" style="margin-bottom: 16px;">
+            <h3 class="card-bar-title">Active Maintenance Recommendations</h3>
+            <span id="alertsCountBadge" class="connection-indicator-pill online">● 0 ACTIVE RECOMMENDATIONS</span>
+          </div>
+
+          <!-- Active Alerts Container (Populated dynamically from Firebase) -->
+          <div id="activeAlertsContainer" class="active-alerts-list">
+            <!-- Loading State -->
+            <div id="alertsLoading" class="alert-loading-box">
+              <div class="conn-dot" style="animation: pulse-dot 1.5s infinite;"></div>
+              <span>Connecting to Firebase real-time stream...</span>
+            </div>
+
+            <!-- No Alerts State (Default clean state) -->
+            <div id="noAlertsBox" class="no-alerts-state-box hidden">
+              <div class="no-alerts-icon">
+                <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+              </div>
+              <h3 class="no-alerts-title">✓ No active maintenance alerts</h3>
+              <p class="no-alerts-desc">No persistent high dust conditions detected. All monitored rooms are in normal operating condition.</p>
+            </div>
+
+            <!-- Live Alert Cards Target -->
+            <div id="alertCardsGrid" class="alert-cards-grid"></div>
+          </div>
+        </section>
+
+        <!-- 4-Room Telemetry & Persistent Monitoring Table -->
+        <section class="apm-card" style="margin-top: 24px;">
+          <div class="card-bar-header">
+            <h3 class="card-bar-title">Room-by-Room Persistent Monitoring Status</h3>
+            <span class="tag-live">REAL-TIME</span>
+          </div>
+          <div class="table-responsive" style="padding: 0 16px 16px 16px;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Office Room</th>
+                  <th>Sensor ID</th>
+                  <th>Connection</th>
+                  <th>Dust Condition</th>
+                  <th>High Hours</th>
+                  <th>Maintenance Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="alertsTableBody">
+                <tr id="alertRow_sensor1">
+                  <td><strong>Room 1</strong> <span class="text-muted">(Office AC Unit 1)</span></td>
+                  <td><code>sensor1</code></td>
+                  <td><span id="connBadge_sensor1" class="connection-indicator-pill waiting"><span class="conn-dot"></span> Waiting</span></td>
+                  <td id="tblDust_sensor1">--</td>
+                  <td id="tblHours_sensor1">0 / 24 hrs</td>
+                  <td id="tblAlert_sensor1"><span class="val-ok">🟢 No inspection required</span></td>
+                  <td>
+                    <a href="room.html?sensor_id=sensor1" class="btn-table-action">View Telemetry</a>
+                  </td>
+                </tr>
+                <tr id="alertRow_sensor2">
+                  <td><strong>Room 2</strong> <span class="text-muted">(Office AC Unit 2)</span></td>
+                  <td><code>sensor2</code></td>
+                  <td><span id="connBadge_sensor2" class="connection-indicator-pill waiting"><span class="conn-dot"></span> Waiting</span></td>
+                  <td id="tblDust_sensor2">--</td>
+                  <td id="tblHours_sensor2">0 / 24 hrs</td>
+                  <td id="tblAlert_sensor2"><span class="val-ok">🟢 No inspection required</span></td>
+                  <td>
+                    <a href="room.html?sensor_id=sensor2" class="btn-table-action">View Telemetry</a>
+                  </td>
+                </tr>
+                <tr id="alertRow_sensor3">
+                  <td><strong>Room 3</strong> <span class="text-muted">(Office AC Unit 3)</span></td>
+                  <td><code>sensor3</code></td>
+                  <td><span id="connBadge_sensor3" class="connection-indicator-pill waiting"><span class="conn-dot"></span> Waiting</span></td>
+                  <td id="tblDust_sensor3">--</td>
+                  <td id="tblHours_sensor3">0 / 24 hrs</td>
+                  <td id="tblAlert_sensor3"><span class="val-ok">🟢 No inspection required</span></td>
+                  <td>
+                    <a href="room.html?sensor_id=sensor3" class="btn-table-action">View Telemetry</a>
+                  </td>
+                </tr>
+                <tr id="alertRow_sensor4">
+                  <td><strong>Room 4</strong> <span class="text-muted">(Office AC Unit 4)</span></td>
+                  <td><code>sensor4</code></td>
+                  <td><span id="connBadge_sensor4" class="connection-indicator-pill waiting"><span class="conn-dot"></span> Waiting</span></td>
+                  <td id="tblDust_sensor4">--</td>
+                  <td id="tblHours_sensor4">0 / 24 hrs</td>
+                  <td id="tblAlert_sensor4"><span class="val-ok">🟢 No inspection required</span></td>
+                  <td>
+                    <a href="room.html?sensor_id=sensor4" class="btn-table-action">View Telemetry</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+
+    </div><!-- /.apm-main-container -->
+
+    <footer class="apm-footer">
+      <div>AirSense • IoT-Based Air Conditioning Dust Accumulation Monitoring System with Real-Time Web Analytics</div>
+    </footer>
+
+  </div><!-- /.apm-body -->
+  </div><!-- /.apm-layout -->
+
+  <script>
+    window.ROOMS_CONFIG = {
+      sensor1: { id: "sensor1", name: "Room 1", label: "Office AC Unit 1", hardware: "ESP32 + PMS5003" },
+      sensor2: { id: "sensor2", name: "Room 2", label: "Office AC Unit 2", hardware: "ESP32 + PMS5003" },
+      sensor3: { id: "sensor3", name: "Room 3", label: "Office AC Unit 3", hardware: "ESP32 + PMS5003" },
+      sensor4: { id: "sensor4", name: "Room 4", label: "Office AC Unit 4", hardware: "ESP32 + PMS5003" }
+    };
+  </script>
+
+  <script type="module" src="assets/js/alerts.js"></script>
+  <script src="assets/js/nav.js"></script>
+<script>function toggleSidebar(f){var l=document.querySelector('.apm-layout');if(!l)return;if(typeof f==='boolean')l.classList.toggle('sidebar-open',f);else l.classList.toggle('sidebar-open');}document.addEventListener('keydown',function(e){if(e.key==='Escape')toggleSidebar(false);});</script>
+</body>
+</html>

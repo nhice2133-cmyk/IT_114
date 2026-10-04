@@ -1,0 +1,10 @@
+﻿Γ£ô {"zoom":"0.8","innerWidth":1262,"clientWidth":1262,"scrollWidth":1262,"mq1400":true,"mq1750":true,"boxPhysical":192,"fixedW":1262,"fixedH":624}
+  file:///C:/Users/Acer/Desktop/Capstone_Final_Presentation/zoom-test.html
+agent-browser-win32-x64.exe : [agent-browser] launched browser
+At C:\Users\Acer\AppData\Roaming\npm\agent-browser.ps1:3 char:1
++ & "$basedir\node_modules\agent-browser\bin\agent-browser-win32-x64.ex ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([agent-browser] launched browser:String) 
+    [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

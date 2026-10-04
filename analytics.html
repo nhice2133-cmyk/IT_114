@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AirSense - Historical Analytics and Telemetry Trends">
+  <title id="pageTitle">AirSense | Historical Trends & Analytics</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="apm-layout">
+<aside class="apm-sidebar">
+<a href="index.html" class="sidebar-brand"><span class="brand-logo-cube">AS</span><span class="brand-text"><span class="brand-name">AirSense</span><span class="brand-badge">IoT Telemetry</span></span></a>
+      <div class="sidebar-nav-label">Office Menu — All Units</div>
+      <nav class="apm-side-nav">
+        <a href="index.html" data-nav="dashboard" class="side-nav-link"><span>Dashboard Overview</span></a>
+        <a href="analytics.html" data-nav="analytics" class="side-nav-link"><span>Historical Trends</span></a>
+        <a href="maintenance.html" data-nav="maintenance" class="side-nav-link"><span>Maintenance Logs</span></a>
+        <a href="alerts.html" data-nav="alerts" class="side-nav-link"><span>Alert Records</span></a>
+      </nav>
+      <div id="sidebarRoomCtx" class="sidebar-room-context hidden">
+        <div class="sidebar-ctx-top">
+          <span class="sidebar-context-label">Now Viewing</span>
+          <a id="sidebarClearRoom" href="index.html" class="sidebar-clear-room">✕ All units</a>
+        </div>
+        <span id="sidebarRoomName" class="sidebar-context-room">Room</span>
+        <span id="sidebarRoomSub" class="sidebar-context-sub">AC Unit</span>
+      </div>
+      <nav id="sidebarRoomNav" class="sidebar-room-subnav hidden">
+        <div id="roomNavLabel" class="sidebar-room-subnav-label">Room Pages</div>
+        <a id="sideLinkRoom" href="room.html" class="side-nav-link sub-link"><span>Room Dashboard</span></a>
+        <a id="sideLinkAnalytics" href="analytics.html" class="side-nav-link sub-link"><span>This Room's Trends</span></a>
+        <a id="sideLinkMaint" href="maintenance.html" class="side-nav-link sub-link"><span>This Room's Logs</span></a>
+        <a id="sideLinkAlerts" href="alerts.html" class="side-nav-link sub-link"><span>This Room's Alerts</span></a>
+      </nav>
+      <div class="sidebar-room-links">
+        <div class="sidebar-nav-label">Switch Room / AC Unit</div>
+        <a href="room.html?sensor_id=sensor1" data-room="sensor1" class="side-nav-link">Room 1 - AC Unit 1</a>
+        <a href="room.html?sensor_id=sensor2" data-room="sensor2" class="side-nav-link">Room 2 - AC Unit 2</a>
+        <a href="room.html?sensor_id=sensor3" data-room="sensor3" class="side-nav-link">Room 3 - AC Unit 3</a>
+        <a href="room.html?sensor_id=sensor4" data-room="sensor4" class="side-nav-link">Room 4 - AC Unit 4</a>
+      </div>
+<div class="sidebar-footer"><div class="sidebar-live-pill">SYSTEM LIVE</div><div>AirSense Monitor</div></div>
+</aside>
+<div class="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
+<div class="apm-body">
+<header class="apm-navbar">
+<div class="navbar-left">
+<button class="sidebar-toggle-btn" onclick="toggleSidebar()">MENU</button>
+<span class="topbar-page-label">Historical Trends</span>
+</div>
+<div class="navbar-right">
+<div class="live-status-pill">
+<span id="headerStatusDot" class="status-indicator-dot dot-online"></span>
+<span id="headerStatusText" class="status-indicator-text">LIVE</span>
+</div>
+</div>
+</header>
+
+
+    <!-- Main Content Container -->
+    <div class="apm-main-container">
+
+      <main class="analytics-page">
+
+        <!-- Analytics Header Banner -->
+        <section class="page-header-banner">
+          <div class="banner-title-group">
+            <div class="unit-tag">HISTORICAL TELEMETRY & DECISION SUPPORT</div>
+            <h1 id="analyticsTitle" class="page-title">Dust Condition & PM2.5 Trends: Room 1</h1>
+            <p id="analyticsDesc" class="page-desc">
+              Visualizing long-term particulate patterns at the AC air intake for <strong>Room 1 (Office AC Unit 1)</strong> to distinguish temporary sensor spikes from persistent conditions.
+            </p>
+          </div>
+        </section>
+
+        <!-- Key Performance Indicators (KPIs) -->
+        <section class="kpi-grid">
+          
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap bg-blue">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+            </div>
+            <div class="kpi-info">
+              <span class="kpi-label">Average Dust Condition</span>
+              <span id="statAvgDust" class="kpi-value">--%</span>
+              <span class="kpi-sub">Across recorded operational cycles</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap bg-purple">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+            </div>
+            <div class="kpi-info">
+              <span class="kpi-label">Peak Dust Condition</span>
+              <span id="statMaxDust" class="kpi-value">--%</span>
+              <span class="kpi-sub">Maximum recorded level</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap bg-red">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg>
+            </div>
+            <div class="kpi-info">
+              <span class="kpi-label">Persistent High Hours</span>
+              <span id="statAlertCount" class="kpi-value">--</span>
+              <span class="kpi-sub">Hours recorded at ≥ 80%</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap bg-emerald">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <div class="kpi-info">
+              <span class="kpi-label">Condition Trend</span>
+              <span id="statAccumRate" class="kpi-value">--</span>
+              <span class="kpi-sub">Trend trajectory assessment</span>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Time Range Selector -->
+        <section class="time-range-selector">
+          <div class="range-selector-header">
+            <h3>Select Time Range</h3>
+            <p>Choose how many days of historical data to display</p>
+          </div>
+          <div class="range-buttons">
+            <button class="range-btn active" data-days="7" onclick="changeTimeRange(7)">Last 7 Days</button>
+            <button class="range-btn" data-days="14" onclick="changeTimeRange(14)">Last 14 Days</button>
+            <button class="range-btn" data-days="30" onclick="changeTimeRange(30)">Last 30 Days</button>
+            <button class="range-btn" data-days="all" onclick="changeTimeRange('all')">All Data</button>
+          </div>
+        </section>
+
+        <!-- Analytics Charts Grid -->
+        <section class="charts-grid">
+
+          <!-- Chart 1: Dust Condition Percentage Trend -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <h3 class="chart-title">📊 Daily Dust Condition Trend (%)</h3>
+                <p class="chart-subtitle">Track dust accumulation patterns day by day with clear reference thresholds</p>
+              </div>
+            </div>
+            <div class="chart-container-large">
+              <canvas id="dustTrendChart"></canvas>
+            </div>
+            <div class="chart-legend-info">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #059669;"></span>
+                <span class="legend-text"><strong>Low (0-39%):</strong> Normal condition</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #f59e0b;"></span>
+                <span class="legend-text"><strong>Moderate (40-79%):</strong> Monitor closely</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #dc2626;"></span>
+                <span class="legend-text"><strong>High (80-100%):</strong> Persistent 24hrs triggers alert</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart 2: PM2.5, PM1.0, PM10 Particulate Spectrum -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <h3 class="chart-title">🌫️ Daily Particulate Matter Readings (PM1.0, PM2.5, PM10)</h3>
+                <p class="chart-subtitle">Monitor air quality with detailed particle size breakdown measured in µg/m³</p>
+              </div>
+            </div>
+            <div class="chart-container-large">
+              <canvas id="pmTrendChart"></canvas>
+            </div>
+            <div class="chart-legend-info">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #2d6e52;"></span>
+                <span class="legend-text"><strong>PM2.5:</strong> Primary reference for dust calculation</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #9333ea;"></span>
+                <span class="legend-text"><strong>PM1.0:</strong> Ultra-fine particles</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #f59e0b;"></span>
+                <span class="legend-text"><strong>PM10:</strong> Coarse dust particles</span>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Daily Readings Table -->
+        <section class="daily-readings-section">
+          <div class="readings-header">
+            <h3>📅 Daily Readings Summary</h3>
+            <p>Detailed breakdown of each day's air quality measurements</p>
+          </div>
+          <div class="readings-table-wrapper">
+            <table class="readings-table" id="dailyReadingsTable">
+              <thead>
+                <tr>
+                  <th>Day</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Dust Condition</th>
+                  <th>PM2.5 (µg/m³)</th>
+                  <th>PM1.0 (µg/m³)</th>
+                  <th>PM10 (µg/m³)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="readingsTableBody">
+                <!-- Populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </main>
+
+    </div><!-- /.apm-main-container -->
+
+    <footer class="apm-footer">
+      <div>AirSense • IoT-Based Air Conditioning Dust Accumulation Monitoring System with Real-Time Web Analytics</div>
+    </footer>
+
+  </div><!-- /.apm-body -->
+  </div><!-- /.apm-layout -->
+
+  <script type="module" src="assets/js/analytics.js"></script>
+  <script src="assets/js/nav.js"></script>
+  <script>function toggleSidebar(f){var l=document.querySelector('.apm-layout');if(!l)return;if(typeof f==='boolean')l.classList.toggle('sidebar-open',f);else l.classList.toggle('sidebar-open');}document.addEventListener('keydown',function(e){if(e.key==='Escape')toggleSidebar(false);});</script>
+</body>
+</html>

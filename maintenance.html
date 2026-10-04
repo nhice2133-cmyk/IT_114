@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AirSense - AC Preventive Maintenance Logs and Servicing Records">
+  <title>AirSense | AC Preventive Maintenance Logs</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="apm-layout">
+<aside class="apm-sidebar">
+<a href="index.html" class="sidebar-brand"><span class="brand-logo-cube">AS</span><span class="brand-text"><span class="brand-name">AirSense</span><span class="brand-badge">IoT Telemetry</span></span></a>
+      <div class="sidebar-nav-label">Office Menu — All Units</div>
+      <nav class="apm-side-nav">
+        <a href="index.html" data-nav="dashboard" class="side-nav-link"><span>Dashboard Overview</span></a>
+        <a href="analytics.html" data-nav="analytics" class="side-nav-link"><span>Historical Trends</span></a>
+        <a href="maintenance.html" data-nav="maintenance" class="side-nav-link"><span>Maintenance Logs</span></a>
+        <a href="alerts.html" data-nav="alerts" class="side-nav-link"><span>Alert Records</span></a>
+      </nav>
+      <div id="sidebarRoomCtx" class="sidebar-room-context hidden">
+        <div class="sidebar-ctx-top">
+          <span class="sidebar-context-label">Now Viewing</span>
+          <a id="sidebarClearRoom" href="index.html" class="sidebar-clear-room">✕ All units</a>
+        </div>
+        <span id="sidebarRoomName" class="sidebar-context-room">Room</span>
+        <span id="sidebarRoomSub" class="sidebar-context-sub">AC Unit</span>
+      </div>
+      <nav id="sidebarRoomNav" class="sidebar-room-subnav hidden">
+        <div id="roomNavLabel" class="sidebar-room-subnav-label">Room Pages</div>
+        <a id="sideLinkRoom" href="room.html" class="side-nav-link sub-link"><span>Room Dashboard</span></a>
+        <a id="sideLinkAnalytics" href="analytics.html" class="side-nav-link sub-link"><span>This Room's Trends</span></a>
+        <a id="sideLinkMaint" href="maintenance.html" class="side-nav-link sub-link"><span>This Room's Logs</span></a>
+        <a id="sideLinkAlerts" href="alerts.html" class="side-nav-link sub-link"><span>This Room's Alerts</span></a>
+      </nav>
+      <div class="sidebar-room-links">
+        <div class="sidebar-nav-label">Switch Room / AC Unit</div>
+        <a href="room.html?sensor_id=sensor1" data-room="sensor1" class="side-nav-link">Room 1 - AC Unit 1</a>
+        <a href="room.html?sensor_id=sensor2" data-room="sensor2" class="side-nav-link">Room 2 - AC Unit 2</a>
+        <a href="room.html?sensor_id=sensor3" data-room="sensor3" class="side-nav-link">Room 3 - AC Unit 3</a>
+        <a href="room.html?sensor_id=sensor4" data-room="sensor4" class="side-nav-link">Room 4 - AC Unit 4</a>
+      </div>
+<div class="sidebar-footer"><div class="sidebar-live-pill">SYSTEM LIVE</div><div>AirSense Monitor</div></div>
+</aside>
+<div class="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
+<div class="apm-body">
+<header class="apm-navbar">
+<div class="navbar-left">
+<button class="sidebar-toggle-btn" onclick="toggleSidebar()">MENU</button>
+<span class="topbar-page-label">Maintenance Logs</span>
+</div>
+<div class="navbar-right">
+<div class="live-status-pill">
+<span id="headerStatusDot" class="status-indicator-dot dot-online"></span>
+<span id="headerStatusText" class="status-indicator-text">LIVE</span>
+</div>
+</div>
+</header>
+
+
+    <!-- Main Content Container -->
+    <div class="apm-main-container">
+
+      <main class="maintenance-page">
+
+        <!-- Selected-unit context banner (shown only when ?sensor_id= is present) -->
+        <section id="maintUnitBanner" class="page-header-banner hidden" style="margin-bottom: 16px;">
+          <div class="banner-title-group">
+            <div class="unit-tag">SELECTED UNIT · FILTERED VIEW</div>
+            <h1 id="maintUnitTitle" class="page-title">Room Maintenance Logs</h1>
+            <p id="maintUnitDesc" class="page-desc">Showing servicing history filtered to the selected AC unit.</p>
+          </div>
+        </section>
+
+        <!-- Header Banner -->
+        <section class="page-header-banner">
+          <div class="banner-title-group">
+            <div class="unit-tag">PREVENTIVE MAINTENANCE & SERVICING</div>
+            <h1 class="page-title">AC Maintenance & Filter Cleaning Logs</h1>
+            <p class="page-desc">
+              Record servicing activities, mesh washing, and coil sanitization to track the lifecycle and maintenance accountability of monitored AC units.
+            </p>
+          </div>
+        </section>
+
+        <!-- Dynamic Notification Alert Box -->
+        <div id="alertBox" class="alert-box hidden" style="margin-bottom: 20px;"></div>
+
+        <div class="maintenance-layout">
+          
+          <!-- Left Column: Log Maintenance Action Form -->
+          <div class="form-column">
+            <div class="card form-card">
+              <div class="card-header-simple">
+                <h3 class="card-title">Log Servicing Action</h3>
+                <p class="card-desc">Record a filter wash or AC servicing event</p>
+              </div>
+
+              <form id="maintenanceForm" class="maintenance-form">
+                <div class="form-group">
+                  <label for="sensor_id" class="form-label">Target AC Unit / Sensor</label>
+                  <select id="sensor_id" name="sensor_id" class="form-input">
+                    <option value="sensor1">Room 1 (Office AC Unit 1)</option>
+                    <option value="sensor2">Room 2 (Office AC Unit 2)</option>
+                    <option value="sensor3">Room 3 (Office AC Unit 3)</option>
+                    <option value="sensor4">Room 4 (Office AC Unit 4)</option>
+                  </select>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group col-half">
+                    <label for="service_date" class="form-label">Date Serviced</label>
+                    <input type="date" id="service_date" name="service_date" class="form-input" required>
+                  </div>
+
+                  <div class="form-group col-half">
+                    <label for="dust_level_before" class="form-label">Dust Level Before Clean (%)</label>
+                    <input type="number" step="0.1" min="0" max="100" id="dust_level_before" name="dust_level_before" class="form-input" placeholder="e.g. 84.5" required>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="action_taken" class="form-label">Action Performed</label>
+                  <select id="action_taken" name="action_taken" class="form-input">
+                    <option value="Filter Cleaning & Mesh Wash">Filter Cleaning & Mesh Wash</option>
+                    <option value="Evaporator Coil Chemical Wash">Evaporator Coil Chemical Wash</option>
+                    <option value="Blower Wheel & Drain Pan Flush">Blower Wheel & Drain Pan Flush</option>
+                    <option value="Complete Preventive Maintenance (PM)">Complete Preventive Maintenance (PM)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="notes" class="form-label">Technician Notes & Observations</label>
+                  <textarea id="notes" name="notes" rows="3" class="form-input" placeholder="e.g., Heavy lint buildup removed from upper mesh filter. Airflow restored to nominal." required></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="technician_name" class="form-label">Technician / Personnel Name</label>
+                  <input type="text" id="technician_name" name="technician_name" class="form-input" value="Lead HVAC Technician" required>
+                </div>
+
+                <button type="submit" class="btn-primary-action">
+                  <span>Save Maintenance Record</span>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </button>
+              </form>
+
+            </div>
+          </div>
+
+          <!-- Right Column: Historical Maintenance Records Table -->
+          <div class="table-column">
+            <div class="card table-card">
+              <div class="card-header-simple">
+                <h3 class="card-title">Maintenance History & Servicing Archive</h3>
+                <p class="card-desc">All historical servicing logs stored securely in Firebase Realtime Database</p>
+              </div>
+
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>AC Unit</th>
+                      <th>Action Taken</th>
+                      <th>Dust Before</th>
+                      <th>Technician</th>
+                      <th>Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="maintTableBody">
+                    <tr>
+                      <td colspan="6" class="text-center empty-state">Loading maintenance records from Firebase...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
+    </div><!-- /.apm-main-container -->
+
+    <footer class="apm-footer">
+      <div>AirSense • IoT-Based Air Conditioning Dust Accumulation Monitoring System with Real-Time Web Analytics</div>
+    </footer>
+
+  </div><!-- /.apm-body -->
+  </div><!-- /.apm-layout -->
+
+  <script type="module" src="assets/js/maintenance.js"></script>
+  <script src="assets/js/nav.js"></script>
+<script>function toggleSidebar(f){var l=document.querySelector('.apm-layout');if(!l)return;if(typeof f==='boolean')l.classList.toggle('sidebar-open',f);else l.classList.toggle('sidebar-open');}document.addEventListener('keydown',function(e){if(e.key==='Escape')toggleSidebar(false);});</script>
+</body>
+</html>
